@@ -1,7 +1,7 @@
 { config, lib, pkgs, agenix, host, ... }:
 
 let
-  mathLibs = with pkgs; [ blis openblas fftw gsl suitesparse eigen ];
+  mathLibs = with pkgs; [ blis openblas fftw gsl suitesparse eigen llvmPackages_latest.openmp ];
 in
 
 {
