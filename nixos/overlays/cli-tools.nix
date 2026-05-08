@@ -182,6 +182,8 @@ in {
           url = "https://github.com/denoland/rusty_v8/releases/download/v${codexLibrustyV8Version}/librusty_v8_release_${prev.stdenv.hostPlatform.rust.rustcTarget}.a.gz";
           sha256 = codexLibrustyV8Hashes.${prev.stdenv.hostPlatform.system} or (builtins.throw "codex overlay: unsupported platform ${prev.stdenv.hostPlatform.system}");
         };
+        CARGO_PROFILE_RELEASE_LTO = "false";
+        CARGO_PROFILE_RELEASE_CODEGEN_UNITS = "16";
       };
     })
     else prev.codex or (builtins.throw "overlay: codex not found in nixpkgs");
