@@ -1,5 +1,13 @@
 { lib, host, ... }:
 
+let
+  # Common ownership for user-scoped secrets
+  userSecret = {
+    owner = host.username;
+    group = "users";
+    mode = "0600";
+  };
+in
 {
   # --- Keyring ---
   # gnome-keyring for storing secrets (Brave sync, SSH keys, etc.) -- kwallet disabled
@@ -32,27 +40,35 @@
     extraConfig = "MaxAuthTries 3";
   };
 
-  # Agenix -- age-encrypted secrets decrypted at activation time
-  # Tries host SSH key first, falls back to personal age key (for new machine bootstrap)
+  # --- Secrets (agenix) ---
+  # age-encrypted files decrypted at activation time.
+  # Tries host SSH key first, falls back to personal age key (for new machine bootstrap).
   age.identityPaths = [
     "/etc/ssh/ssh_host_ed25519_key"
     "${host.homeDir}/.config/age/keys.txt"
   ];
-  age.secrets.id_ed25519_github = {
+
+  # SSH keys -- symlinked into ~/.ssh
+  age.secrets.id_ed25519_github = userSecret // {
     file = ./secrets/id_ed25519_github.age;
     path = "${host.homeDir}/.ssh/id_ed25519_github";
-    owner = host.username;
-    group = "users";
-    mode = "0600";
+  };
+  age.secrets.aws-default-key-pair = userSecret // {
+    file = ./secrets/aws-default-key-pair.age;
+    path = "${host.homeDir}/.ssh/aws-default-key-pair.pem";
   };
 
-  # Decrypted to /run/agenix/openrouter-api-key (read manually or via EnvironmentFile)
-  age.secrets.openrouter-api-key = {
+  # API keys / credentials -- decrypted to /run/agenix/<name>, read manually or via EnvironmentFile
+  age.secrets.openrouter-api-key = userSecret // {
     file = ./secrets/openrouter-api-key.age;
-    owner = host.username;
-    group = "users";
-    mode = "0600";
   };
+  age.secrets.aws-access-key-id = userSecret // {
+    file = ./secrets/aws-access-key-id.age;
+  };
+  age.secrets.aws-secret-access-key = userSecret // {
+    file = ./secrets/aws-secret-access-key.age;
+  };
+
   # --- Firewall ---
   # NixOS enables firewall by default; make policy explicit
   networking.firewall = {
