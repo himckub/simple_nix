@@ -121,6 +121,9 @@ in
     # Node/TypeScript
     nodejs typescript bun
 
+    # Cloud tools
+    awscli2                    # AWS CLI v2
+
     # Profiling & tracing (CPU, memory, dynamic tracing across C++/Rust/Python)
     perf                       # Linux sampling profiler (foundation)
     flamegraph                 # Brendan Gregg's flame graph scripts
