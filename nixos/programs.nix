@@ -126,6 +126,7 @@ in
     flamegraph                 # Brendan Gregg's flame graph scripts
     pprof                      # Cross-language pprof-format profile viewer
     graphviz                   # DOT graph renderer (pprof graphs, general use)
+    d2                         # Declarative diagram scripting language (terrastruct)
     hyperfine                  # CLI benchmarking (--export-json)
     samply                     # Modern sampling profiler -> Firefox Profiler
     hotspot                    # GUI for perf data
