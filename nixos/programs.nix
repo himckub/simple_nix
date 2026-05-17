@@ -63,6 +63,7 @@ in
     tmux                       # Terminal multiplexer
     mc                         # Midnight Commander file manager
     ntfs3g                     # NTFS filesystem support
+    efibootmgr                 # Manage UEFI NVRAM boot entries
   ] ++ lib.optionals host.nvidia [
     nvtopPackages.nvidia       # GPU process monitoring
   ] ++ [
@@ -92,6 +93,7 @@ in
     llvmPackages_latest.lld    # LLVM linker
     llvmPackages_latest.lldb   # LLVM debugger
     pkg-config                 # Library metadata resolver (used by cmake/autotools/cargo)
+    sccache                    # Compiler cache for C/C++/CUDA (via CMake launcher) and Rust (via RUSTC_WRAPPER)
     conan                      # C/C++ package manager
     vcpkg                      # Microsoft C/C++ package manager
     vcpkg-tool                 # vcpkg standalone tool
@@ -214,5 +216,14 @@ in
       (lib.makeSearchPathOutput "dev" "lib/pkgconfig" mathLibs)
       (lib.makeSearchPathOutput "dev" "share/pkgconfig" mathLibs)
     ];
+
+    # sccache: route Cargo and CMake-driven C/C++/CUDA through the cache by default.
+    # Raw make/autotools projects are not covered (would need CC="sccache clang",
+    # which breaks some configure scripts) -- opt in per-project when needed.
+    RUSTC_WRAPPER = "sccache";
+    CMAKE_C_COMPILER_LAUNCHER = "sccache";
+    CMAKE_CXX_COMPILER_LAUNCHER = "sccache";
+    CMAKE_CUDA_COMPILER_LAUNCHER = "sccache";
+    SCCACHE_CACHE_SIZE = "50G";
   };
 }
