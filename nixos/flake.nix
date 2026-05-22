@@ -51,7 +51,7 @@
         overlays = [ cliToolsOverlay ];
       };
     in {
-      inherit (pkgs) claude-code gemini-cli opencode codex;
+      inherit (pkgs) claude-code opencode codex;
     };
   };
 }

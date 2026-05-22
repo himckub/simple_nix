@@ -22,11 +22,6 @@ let
   };
   claudeCodeGcsBase = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases";
 
-  # -- gemini-cli (buildNpmPackage, GitHub source) ---------------------
-  geminiCliVersion = "0.43.0";
-  geminiCliSrcHash = "sha256-UFz+CQLGbzFlpa5Mhf/frnQJWttF35URvua1QTfoaZ0=";
-  geminiCliNpmDepsHash = "sha256-7Pl020NKKzRpQftzEYRpQ0v1mkPnO3kVZITvFSLYztI=";
-
   # -- opencode (stdenvNoCC + Bun, GitHub source) ----------------------
   opencodeVersion = "1.15.7";
   opencodeSrcHash = "sha256-fk8GDVE+bQfOkZCQ1YEc3V7YIXDHfNC/srcZs/MrE38=";
@@ -96,26 +91,6 @@ in {
         };
       }
     else prev.claude-code or (builtins.throw "overlay: claude-code not found in nixpkgs");
-
-  # -- gemini-cli ------------------------------------------------------
-  gemini-cli =
-    if prev ? gemini-cli && versionNewer geminiCliVersion prev.gemini-cli.version
-    then prev.gemini-cli.overrideAttrs (old: rec {
-      version = geminiCliVersion;
-      src = prev.fetchFromGitHub {
-        owner = "google-gemini";
-        repo = "gemini-cli";
-        tag = "v${version}";
-        hash = geminiCliSrcHash;
-      };
-      npmDeps = prev.fetchNpmDeps {
-        inherit src;
-        inherit (old) postPatch;
-        name = "gemini-cli-${version}-npm-deps";
-        hash = geminiCliNpmDepsHash;
-      };
-    })
-    else prev.gemini-cli or (builtins.throw "overlay: gemini-cli not found in nixpkgs");
 
   # -- opencode --------------------------------------------------------
   opencode =

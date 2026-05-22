@@ -195,77 +195,6 @@ update_claude_code() {
   UPDATED+=("$name")
 }
 
-update_gemini_cli() {
-  local name="gemini-cli"
-  echo "-- $name ----------------------------------"
-
-  local current
-  current=$(get_overlay_value geminiCliVersion)
-  echo "  current: ${current}"
-
-  local latest
-  latest=$(github_api_curl "https://api.github.com/repos/google-gemini/gemini-cli/releases/latest" | jq -r '.tag_name' | sed 's/^v//' || true)
-  if [[ -z "$latest" || "$latest" == "null" ]]; then
-    echo "  FAILED: could not fetch latest version"
-    FAILED+=("$name")
-    return
-  fi
-  echo "  latest:  ${latest}"
-
-  if ! version_gt "$latest" "$current"; then
-    echo "  up to date"
-    UP_TO_DATE+=("$name")
-    return
-  fi
-
-  echo "  updating ${current} → ${latest}"
-
-  local src_url="https://github.com/google-gemini/gemini-cli/archive/refs/tags/v${latest}.tar.gz"
-
-  echo "  computing source hash..."
-  local src_hash
-  src_hash=$(prefetch_src_hash "$src_url" true || true)
-  if [[ -z "$src_hash" ]]; then
-    echo "  FAILED: could not compute source hash"
-    FAILED+=("$name")
-    return
-  fi
-  echo "  src hash: ${src_hash}"
-
-  local orig_version="$current"
-  local orig_src_hash; orig_src_hash=$(get_overlay_value geminiCliSrcHash)
-  local orig_dep_hash; orig_dep_hash=$(get_overlay_value geminiCliNpmDepsHash)
-
-  set_overlay_value geminiCliVersion "$latest"
-  set_overlay_value geminiCliSrcHash "$src_hash"
-  set_overlay_value geminiCliNpmDepsHash "$FAKE_HASH"
-
-  if $DRY_RUN; then
-    echo "  [dry-run] skipping dep hash extraction"
-    set_overlay_value geminiCliVersion "$orig_version"
-    set_overlay_value geminiCliSrcHash "$orig_src_hash"
-    set_overlay_value geminiCliNpmDepsHash "$orig_dep_hash"
-    echo "  UPDATE AVAILABLE: ${current} → ${latest}"
-    return
-  fi
-
-  local real_hash
-  real_hash=$(extract_fod_hash gemini-cli)
-
-  if [[ -n "$real_hash" ]]; then
-    set_overlay_value geminiCliNpmDepsHash "$real_hash"
-    echo "  dep hash: ${real_hash}"
-    echo "  UPDATED: ${current} → ${latest}"
-    UPDATED+=("$name")
-  else
-    echo "  FAILED: could not extract dep hash, reverting"
-    set_overlay_value geminiCliVersion "$orig_version"
-    set_overlay_value geminiCliSrcHash "$orig_src_hash"
-    set_overlay_value geminiCliNpmDepsHash "$orig_dep_hash"
-    FAILED+=("$name (hash extraction failed)")
-  fi
-}
-
 update_opencode() {
   local name="opencode"
   echo "-- $name ----------------------------------"
@@ -485,9 +414,6 @@ fi
 echo ""
 
 if should_update claude-code; then update_claude_code; else SKIPPED+=(claude-code); fi
-echo ""
-
-if should_update gemini-cli; then update_gemini_cli; else SKIPPED+=(gemini-cli); fi
 echo ""
 
 if should_update opencode; then update_opencode; else SKIPPED+=(opencode); fi

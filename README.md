@@ -136,7 +136,7 @@ Relog (SDDM) to pick up the new Hyprland session.
 - **Go**: go, gopls
 - **JVM**: JDK, Kotlin, kotlin-language-server
 - **Neovim**: NvChad-based, LSPs from nix (clangd, basedpyright, ruff, rust-analyzer, ts_ls, bashls), conform.nvim for formatting. See [`config/nvim/CHEATSHEET.md`](config/nvim/CHEATSHEET.md)
-- **AI coding tools**: claude-code, gemini-cli, codex, opencode are managed via a [version overlay](#auto-updating-cli-tools) that stays ahead of nixpkgs
+- **AI coding tools**: claude-code, codex, opencode are managed via a [version overlay](#auto-updating-cli-tools) that stays ahead of nixpkgs
 - **AMD uProf** (optional, AMD CPUs only) -- microarchitectural profiler: IBS sampling, Zen PMU counters, cache/mem/branch/TLB events, power timechart. See [AMD uProf setup](#amd-uprof-optional)
 
 ## Theme
@@ -302,7 +302,7 @@ To boot Windows: press F11 at POST for the boot device menu, select the Windows 
 
 ## Auto-Updating CLI Tools
 
-AI coding tools (claude-code, gemini-cli, codex, opencode) update faster than nixpkgs can merge PRs. Rather than wait 1-2 weeks, a version overlay bumps them ahead of nixpkgs automatically.
+AI coding tools (claude-code, codex, opencode) update faster than nixpkgs can merge PRs. Rather than wait 1-2 weeks, a version overlay bumps them ahead of nixpkgs automatically.
 
 ### How it works
 

@@ -47,4 +47,4 @@ jobs:
           git push -fu origin "$BRANCH"
           gh pr list --head "$BRANCH" --json number -q '.[0].number' | grep -q . || \
             gh pr create --title "chore: update cli tools" \
-              --body "Automated version bump of AI coding tools (claude-code, gemini-cli, opencode, codex)."
+              --body "Automated version bump of AI coding tools (claude-code, opencode, codex)."
