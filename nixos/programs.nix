@@ -47,6 +47,7 @@ in
     # Core utilities
     git-filter-repo gh wget curl unzip p7zip file fastfetch optipng
     imagemagick                # Image conversion/resizing (convert, mogrify)
+    poppler-utils              # PDF utilities (pdftotext, pdfimages, pdfinfo)
     ffmpeg                     # Audio/video transcoding and processing
     age                        # age encryption (used by agenix for key management)
     agenix.packages.${pkgs.stdenv.hostPlatform.system}.default   # age secret management CLI
